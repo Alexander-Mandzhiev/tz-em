@@ -1,0 +1,57 @@
+version: "3.0"
+
+services:
+  shop:
+    build: ./shop
+    container_name: shop
+    volumes:
+      - "./shop:/src/app"
+    working_dir: "/src/app"
+    ports:
+      - 5000:5000
+      - 9229:9229
+    command: npm run start
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: always
+
+  history:
+    build: ./history
+    container_name: history
+    working_dir: "/src/app"
+    ports:
+      - 5010:5010
+      - 9239:9239
+    volumes:
+      - "./history:/src/app"
+    command: npm run start
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      
+volumes:
+  pgdata:
