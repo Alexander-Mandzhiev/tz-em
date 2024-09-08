@@ -31,6 +31,21 @@ services:
       - rabbitmq
     restart: always
 
+  users:
+    build: ./users
+    container_name: users
+    working_dir: "/src/app"
+    ports:
+      - 5020:5020
+      - 9249:9249
+    volumes:
+      - "./users:/src/app"
+    command: npm run start
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: always
+
   postgres:
     container_name: postgres
     image: postgres
